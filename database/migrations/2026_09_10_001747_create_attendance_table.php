@@ -6,28 +6,40 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-   public function up(): void
-{
-    Schema::create('attendance', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
-        $table->date('tanggal');
-        $table->time('waktu');
-        $table->string('status')->default('hadir');
-        $table->foreignId('qr_location_id')->constrained('qr_locations')->onDelete('cascade');
-        $table->string('token');
-        $table->decimal('latitude', 10, 7)->nullable();
-        $table->decimal('longitude', 10, 7)->nullable();
-        $table->timestamps();
-    });
-}
+    public function up(): void
+    {
+        Schema::create('attendance', function (Blueprint $table) {
+            $table->id();
 
-    /**
-     * Reverse the migrations.
-     */
+            $table->foreignId('student_id')
+                ->constrained('students')
+                ->cascadeOnDelete();
+
+            $table->foreignId('qr_location_id')
+                ->constrained('qr_locations')
+                ->cascadeOnDelete();
+
+            $table->foreignId('qr_token_id')
+                ->constrained('qr_tokens')
+                ->cascadeOnDelete();
+
+            $table->date('attendance_date');
+            $table->time('attendance_time');
+
+            $table->string('status')->default('hadir');
+
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
+
+            $table->timestamps();
+
+            $table->unique([
+                'student_id',
+                'attendance_date'
+            ]);
+        });
+    }
+
     public function down(): void
     {
         Schema::dropIfExists('attendance');

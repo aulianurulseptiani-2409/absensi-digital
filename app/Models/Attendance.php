@@ -13,10 +13,11 @@ class Attendance extends Model
 
     protected $fillable = [
         'student_id',
-        'tanggal',
-        'waktu',
-        'status',
         'qr_location_id',
+        'qr_token_id',
+        'attendance_date',
+        'attendance_time',
+        'status',
         'latitude',
         'longitude',
     ];

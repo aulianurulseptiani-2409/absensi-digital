@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -24,7 +23,7 @@
             min-height: 100vh;
         }
 
-        /* ================= SIDEBAR ================= */
+        /* SIDEBAR */
 
         .sidebar {
             width: 245px;
@@ -116,8 +115,7 @@
             font-size: 16px;
         }
 
-
-        /* ================= MAIN ================= */
+        /* MAIN */
 
         .main {
             margin-left: 245px;
@@ -125,8 +123,7 @@
             padding: 32px 40px;
         }
 
-
-        /* ================= TOPBAR ================= */
+        /* TOPBAR */
 
         .topbar {
             display: flex;
@@ -181,8 +178,7 @@
             color: #94a3b8;
         }
 
-
-        /* ================= SECTION ================= */
+        /* SECTION */
 
         .section-title {
             margin-bottom: 15px;
@@ -191,8 +187,7 @@
             color: #0f172a;
         }
 
-
-        /* ================= STAT CARDS ================= */
+        /* STAT CARDS */
 
         .stats {
             display: grid;
@@ -263,8 +258,7 @@
             color: #94a3b8;
         }
 
-
-        /* ================= QUICK ACCESS ================= */
+        /* QUICK ACCESS */
 
         .quick-section {
             margin-top: 32px;
@@ -316,8 +310,7 @@
             line-height: 1.5;
         }
 
-
-        /* ================= RESPONSIVE ================= */
+        /* RESPONSIVE */
 
         @media (max-width: 900px) {
             .stats,
@@ -387,22 +380,22 @@
 
         <nav class="menu">
 
-            <a href="#" class="active">
+            <a href="/dashboard" class="active">
                 <div class="menu-icon">⌂</div>
                 <span>Dashboard</span>
             </a>
 
-            <a href="#">
+            <a href="/students">
                 <div class="menu-icon">👨‍🎓</div>
                 <span>Data Siswa</span>
             </a>
 
-            <a href="#">
+            <a href="/classes">
                 <div class="menu-icon">🏫</div>
                 <span>Data Kelas</span>
             </a>
 
-            <a href="#">
+            <a href="/attendance">
                 <div class="menu-icon">📋</div>
                 <span>Absensi</span>
             </a>
@@ -420,7 +413,6 @@
     <!-- MAIN -->
     <main class="main">
 
-        <!-- TOPBAR -->
         <div class="topbar">
 
             <div class="welcome">
@@ -448,6 +440,7 @@
 
 
         <!-- STATISTICS -->
+
         <div class="section-title">
             Ringkasan
         </div>
@@ -532,6 +525,7 @@
 
 
         <!-- QUICK ACCESS -->
+
         <div class="quick-section">
 
             <div class="section-title">
@@ -557,7 +551,7 @@
                 </a>
 
 
-                <a href="#" class="quick-card">
+                <a href="/attendance" class="quick-card">
 
                     <div class="quick-icon">
                         📋
@@ -574,7 +568,7 @@
                 </a>
 
 
-                <a href="#" class="quick-card">
+                <a href="/students" class="quick-card">
 
                     <div class="quick-icon">
                         👨‍🎓
@@ -600,4 +594,3 @@
 
 </body>
 </html>
-```

@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use App\Models\QrToken;
 use App\Models\Student;
 use App\Models\QrLocation;
+use App\Models\ClassModel;
 
 class AttendanceController extends Controller
 {
@@ -106,30 +107,144 @@ class AttendanceController extends Controller
             ], 422);
         }
 
-        // Simpan absensi
+        // Simpan absensi dari QR
         $attendance = Attendance::create([
             'student_id' => $student->id,
             'tanggal' => now()->toDateString(),
             'waktu' => $sekarang,
             'status' => 'hadir',
-            'qr_location_id' =>
-                $qrToken->qr_location_id,
+            'qr_location_id' => $qrToken->qr_location_id,
             'token' => $qrToken->token,
         ]);
 
         return response()->json([
-            'message' =>
-                'Absensi berhasil disimpan',
-            'attendance_id' =>
-                $attendance->id,
-            'student_id' =>
-                $attendance->student_id,
-            'tanggal' =>
-                $attendance->tanggal,
-            'waktu' =>
-                $attendance->waktu,
-            'status' =>
-                $attendance->status,
+            'message' => 'Absensi berhasil disimpan',
+            'attendance_id' => $attendance->id,
+            'student_id' => $attendance->student_id,
+            'tanggal' => $attendance->tanggal,
+            'waktu' => $attendance->waktu,
+            'status' => $attendance->status,
         ]);
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | HALAMAN DATA ABSENSI
+    |--------------------------------------------------------------------------
+    */
+
+    public function index(Request $request)
+    {
+        // Kalau tanggal tidak dipilih,
+        // gunakan tanggal hari ini
+        $tanggal = $request->tanggal ?? now()->toDateString();
+
+        // Ambil semua kelas
+        $classes = ClassModel::orderBy('nama_kelas')->get();
+
+        // Ambil semua siswa
+        $students = Student::with([
+            'schoolClass',
+            'user'
+        ])
+        ->when($request->class_id, function ($query) use ($request) {
+            $query->where('class_id', $request->class_id);
+        })
+        ->orderBy('class_id')
+        ->orderBy('nama')
+        ->get();
+
+        // Ambil absensi pada tanggal yang dipilih
+        $attendances = Attendance::whereDate(
+            'tanggal',
+            $tanggal
+        )
+        ->get()
+        ->keyBy('student_id');
+
+        // Hitung status
+        $jumlahHadir = $attendances
+            ->where('status', 'hadir')
+            ->count();
+
+        $jumlahIzin = $attendances
+            ->where('status', 'izin')
+            ->count();
+
+        $jumlahSakit = $attendances
+            ->where('status', 'sakit')
+            ->count();
+
+        $jumlahAlpa = $attendances
+            ->where('status', 'alpa')
+            ->count();
+
+        return view('attendance.index', compact(
+            'students',
+            'classes',
+            'attendances',
+            'tanggal',
+            'jumlahHadir',
+            'jumlahIzin',
+            'jumlahSakit',
+            'jumlahAlpa'
+        ));
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SIMPAN / UPDATE STATUS ABSENSI
+    |--------------------------------------------------------------------------
+    */
+
+    public function updateStatus(Request $request)
+    {
+        $request->validate([
+            'student_id' => 'required|integer',
+            'tanggal' => 'required|date',
+            'status' => 'required|in:hadir,izin,sakit,alpa',
+        ]);
+
+        $student = Student::find($request->student_id);
+
+        if (!$student) {
+            return redirect()
+                ->back()
+                ->with('error', 'Data siswa tidak ditemukan.');
+        }
+
+        // Cari absensi siswa pada tanggal tersebut
+        $attendance = Attendance::where(
+            'student_id',
+            $student->id
+        )
+        ->whereDate(
+            'tanggal',
+            $request->tanggal
+        )
+        ->first();
+
+        if ($attendance) {
+
+            // Kalau sudah ada, cukup ubah status
+            $attendance->status = $request->status;
+            $attendance->save();
+
+        } else {
+
+            // Kalau belum ada, buat data absensi baru
+            Attendance::create([
+                'student_id' => $student->id,
+                'tanggal' => $request->tanggal,
+                'waktu' => now()->format('H:i:s'),
+                'status' => $request->status,
+            ]);
+        }
+
+        return redirect()
+            ->back()
+            ->with('success', 'Status absensi berhasil diperbarui.');
     }
 }
