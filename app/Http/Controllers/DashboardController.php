@@ -14,7 +14,7 @@ class DashboardController extends Controller
         $jumlahKelas = ClassModel::count();
 
         $absensiHariIni = Attendance::whereDate(
-            'tanggal',
+            'attendance_date',
             now()->toDateString()
         )->count();
 
